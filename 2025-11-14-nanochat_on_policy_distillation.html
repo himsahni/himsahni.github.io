@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>Himanshu Sahni</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/main.css" rel="stylesheet">
+    
+    <!-- Math styling -->
+    <style>
+      /* Center and enlarge display math only */
+      .math-display {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 125% !important;
+      }
+      
+      /* Target all MathJax elements inside math-display */
+      .math-display .MathJax {
+        font-size: 125% !important;
+      }
+      
+      /* Center display math */
+      .MathJax_Display {
+        text-align: center !important;
+        margin: 1em 0 !important;
+      }
+      
+      /* Ensure inline math stays normal size - more specific selectors */
+      #markdown-content .MathJax:not(.MathJax_Display),
+      #markdown-content p .MathJax:not(.MathJax_Display),
+      #markdown-content li .MathJax:not(.MathJax_Display),
+      #markdown-content span .MathJax:not(.MathJax_Display) {
+        font-size: 100% !important;
+      }
+      
+      /* Fix subscripts and superscripts in MathJax */
+      .MathJax sub,
+      .MathJax sup,
+      .MathJax .msub,
+      .MathJax .msup {
+        font-size: inherit !important;
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <!-- Markdown parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          packages: {'[+]': ['ams', 'newcommand', 'configMacros']},
+          tags: 'ams'
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="assets/js/includes.js"></script>
+  </head>
+
+  <body>
+
+  <div id="header-placeholder"></div>
+
+	<!-- +++++ Post +++++ -->
+	<div id="white">
+	    <div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<p><img src="assets/img/me.png" width="50px" height="50px"> <ba>Himanshu Sahni</ba></p>
+					<p><bd>November 14, 2025</bd></p>
+					<p><img class="img-responsive" src="assets/img/blog01.jpg" alt=""></p>
+
+					<!-- Markdown content will be inserted here -->
+					<div id="markdown-content"></div>
+
+					<br>
+					<hr>
+					<p><a href="blog.html">Back</a></p>
+				</div>
+
+			</div><!-- /row -->
+	    </div> <!-- /container -->
+	</div><!-- /white -->
+	
+	<div id="footer-placeholder"></div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    
+    <!-- Script to load and render markdown -->
+    <script>
+      // Configure marked for tables and other features
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      });
+
+      // Function to preprocess markdown to preserve math blocks
+      function preprocessMarkdown(markdown) {
+        // Replace math blocks with placeholders, process markdown, then restore
+        const mathBlocks = [];
+        let mathIndex = 0;
+        
+        // Find all display math blocks ($$...$$)
+        const mathBlockRegex = /\$\$[\s\S]*?\$\$/g;
+        markdown = markdown.replace(mathBlockRegex, (match) => {
+          const placeholder = `<!--MATH_BLOCK_${mathIndex}-->`;
+          mathBlocks[mathIndex] = match;
+          mathIndex++;
+          return '\n\n' + placeholder + '\n\n';
+        });
+        
+        return { processed: markdown, mathBlocks: mathBlocks };
+      }
+
+      // Function to restore math blocks
+      function restoreMathBlocks(html, mathBlocks) {
+        // Use a more robust replacement that handles HTML entities
+        mathBlocks.forEach((mathBlock, index) => {
+          // Try multiple placeholder formats in case marked.js modified them
+          const placeholders = [
+            `<!--MATH_BLOCK_${index}-->`,
+            `&lt;!--MATH_BLOCK_${index}--&gt;`,
+            `__MATH_BLOCK_${index}__`,
+            new RegExp(`<!--MATH_BLOCK_${index}-->`, 'g'),
+            new RegExp(`&lt;!--MATH_BLOCK_${index}--&gt;`, 'g')
+          ];
+          
+          const replacement = `<div class="math-display">${mathBlock}</div>`;
+          
+          placeholders.forEach(placeholder => {
+            if (placeholder instanceof RegExp) {
+              html = html.replace(placeholder, replacement);
+            } else {
+              html = html.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), replacement);
+            }
+          });
+        });
+        return html;
+      }
+
+      // Function to load and render markdown
+      function loadMarkdown() {
+        const markdownFile = '2025-11-14-nanochat_on_policy_distillation.md';
+        
+        fetch(markdownFile)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+          })
+          .then(markdown => {
+            // Preprocess to extract math blocks
+            const { processed, mathBlocks } = preprocessMarkdown(markdown);
+            
+            // Convert markdown to HTML
+            const html = marked.parse(processed);
+            
+            // Debug: log to see what we're working with
+            console.log('Math blocks to restore:', mathBlocks.length);
+            console.log('HTML before restoration:', html.substring(0, 500));
+            
+            // Restore math blocks
+            const finalHtml = restoreMathBlocks(html, mathBlocks);
+            
+            // Debug: check if replacement worked
+            if (finalHtml.includes('MATH_BLOCK')) {
+              console.warn('Some placeholders were not replaced!');
+              console.log('Unreplaced HTML:', finalHtml.match(/MATH_BLOCK_\d+/g));
+            }
+            
+            document.getElementById('markdown-content').innerHTML = finalHtml;
+            
+            // Process math with MathJax after content is inserted
+            if (window.MathJax && window.MathJax.typesetPromise) {
+              // Small delay to ensure DOM is updated
+              setTimeout(() => {
+                MathJax.typesetPromise([document.getElementById('markdown-content')]).then(() => {
+                  console.log('Math rendered successfully');
+                }).catch((err) => {
+                  console.error('Math rendering error:', err);
+                });
+              }, 100);
+            }
+          })
+          .catch(error => {
+            console.error('Error loading markdown:', error);
+            console.error('Tried to load:', markdownFile);
+            document.getElementById('markdown-content').innerHTML = 
+              '<p>Error loading content. Please check the markdown file exists and you are viewing via a local server (not file://).</p><p>Error details: ' + error.message + '</p>';
+          });
+      }
+
+      // Wait for both MathJax and marked to be ready
+      function init() {
+        if (window.MathJax && window.MathJax.startup && window.MathJax.startup.promise) {
+          MathJax.startup.promise.then(() => {
+            loadMarkdown();
+          });
+        } else {
+          // Fallback: wait a bit and try again
+          setTimeout(() => {
+            if (window.MathJax && window.MathJax.startup && window.MathJax.startup.promise) {
+              MathJax.startup.promise.then(() => {
+                loadMarkdown();
+              });
+            } else {
+              // Last resort: just try to load
+              loadMarkdown();
+            }
+          }, 500);
+        }
+      }
+
+      // Start initialization when page loads
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

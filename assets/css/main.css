@@ -244,3 +244,90 @@ bt {
 	font-size: 40px;
 	color: #1abc9c;
 }
+
+#markdown-content {
+line-height: 1.6;
+}
+
+#markdown-content table {
+border-collapse: collapse;
+width: 100%;
+margin: 20px 0;
+}
+
+#markdown-content table th,
+#markdown-content table td {
+border: 1px solid #ddd;
+padding: 8px;
+text-align: left;
+}
+
+#markdown-content table th {
+background-color: #f2f2f2;
+font-weight: bold;
+}
+
+#markdown-content img {
+max-width: 100%;
+height: auto;
+display: block;
+margin: 20px auto;
+}
+
+#markdown-content code {
+background-color: #f4f4f4;
+padding: 2px 4px;
+border-radius: 3px;
+font-family: monospace;
+}
+
+#markdown-content pre {
+background-color: #f4f4f4;
+padding: 15px;
+border-radius: 5px;
+overflow-x: auto;
+}
+
+#markdown-content pre code {
+background-color: transparent;
+padding: 0;
+}
+
+#markdown-content ul, #markdown-content ol {
+margin: 15px 0;
+padding-left: 30px;
+}
+
+#markdown-content h2, #markdown-content h3, #markdown-content h4, #markdown-content h5 {
+margin-top: 30px;
+margin-bottom: 15px;
+}
+
+#markdown-content {
+line-height: 1.6;
+}
+
+#markdown-content p,
+#markdown-content li,
+#markdown-content td {
+font-size: 120%;  /* Increase text by 20% */
+}
+
+/* Exclude MathJax from font-size increases */
+#markdown-content p .MathJax,
+#markdown-content li .MathJax,
+#markdown-content td .MathJax,
+#markdown-content .MathJax {
+font-size: 100% !important;
+}
+
+/* Ensure list items get the font size, but exclude MathJax */
+#markdown-content ul li,
+#markdown-content ol li {
+font-size: 110% !important;
+}
+
+#markdown-content li p,
+#markdown-content li *:not(.MathJax):not(.MathJax *) {
+font-size: 110% !important;
+}
